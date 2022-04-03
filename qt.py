@@ -1,6 +1,16 @@
 import lldb
 from builtins import chr
 
+def __lldb_init_module(debugger, dict):
+    debugger.HandleCommand('type summary add -x "^.*QUrl$" -e -F qt.QUrl_SummaryProvider')
+    debugger.HandleCommand('type summary add -x "^.*QString$" -e -F qt.QString_SummaryProvider')
+    debugger.HandleCommand('type synthetic add -x "^.*QVector<.+>$" -l qt.QVector_SyntheticProvider')
+    debugger.HandleCommand('type summary add -x "^.*QVector<.+>$" -e -s "size=${svar%#}"')
+    debugger.HandleCommand('type synthetic add -x "^.*QList<.+>$" -l qt.QList_SyntheticProvider')
+    debugger.HandleCommand('type summary add -x "^.*QList<.+>$" -e -s "size=${svar%#}"')
+    debugger.HandleCommand('type synthetic add -x "^.*QPointer<.+>$" -l qt.QPointer_SyntheticProvider')
+    debugger.HandleCommand('type summary add -x "^.*QPointer<.+>$" -e -s "filled="${svar%#}"')
+
 def QUrl_SummaryProvider(valobj, internal_dict):
    return valobj.GetFrame().EvaluateExpression(valobj.GetName() + '.toString((QUrl::FormattingOptions)QUrl::PrettyDecoded)');
 
